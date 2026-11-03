@@ -6,7 +6,9 @@ PlacementIQ is a production-ready, portfolio-level web application that utilizes
 
 * **AI Placement Predictor**: Predicts placement status outcomes using a Scikit-Learn Random Forest Classifier trained on academic and project parameters.
 * **Salary Estimation**: Predicts expected package offers (CTC in INR LPA) using a Random Forest Regressor.
-* **Personalized Roadmap Generator**: Dynamically analyzes individual student profile weaknesses (e.g. low DSA, Communication, Aptitude score, lack of projects/internships) and maps out a step-by-step learning checklist complete with estimated weeks and curated resources.
+* **Explainable AI (XAI with SHAP)**: Mathematically decomposes predictions using TreeExplainer SHAP values to reveal exactly which student features pushed the probability and salary up or down, paired with an Ollama-generated natural-language explanation.
+* **AI Career Mentor**: Interactive, conversational AI mentor powered by a local Ollama LLM (`qwen3:4b`), providing student-specific guidance grounded in their actual verified metrics.
+* **Personalized AI Roadmap**: Synthesizes custom multi-week learning roadmaps targeting specific detected weaknesses without replacing the standard milestone checklists.
 * **Real-time Company Eligibility Check**: Evaluates user profile attributes (CGPA, Backlogs, Technical Ratings) against active requirements of partner databases (Google, Stripe, Vercel, TCS, etc.), highlighting criteria gaps.
 * **Premium SaaS Dashboard**: Interactive UI/UX featuring dark/light mode switches, glassmorphic cards, custom widgets, loading skeletons, and interactive radar/bar charts (powered by Recharts and Framer Motion).
 * **Admin Management Console**: Allows platform administrators to manage hiring company criteria, view platform metrics (total users, prediction runs, averages), and study common technical skill deficiencies across the student directory.
@@ -108,6 +110,13 @@ Ensure you have **Node.js (v18+)**, **Python (v3.9+)**, and a running **MongoDB*
    JWT_SECRET=your_jwt_super_secret_key_here
    JWT_EXPIRES_IN=7d
    ML_SERVICE_URL=http://127.0.0.1:8000
+   OLLAMA_BASE_URL=http://localhost:11434
+   OLLAMA_MODEL=qwen3:4b
+   ```
+4. Ensure Ollama is running locally:
+   ```bash
+   # Ollama runs as a background service on http://localhost:11434
+   ollama list
    ```
 4. Seed the database with sample companies, skills, and admin credentials:
    ```bash

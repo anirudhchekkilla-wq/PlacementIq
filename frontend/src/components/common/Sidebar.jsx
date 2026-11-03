@@ -15,6 +15,7 @@ import {
   FiLogOut,
   FiSun,
   FiMoon,
+  FiMessageSquare,
 } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 
@@ -27,6 +28,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     { name: 'Predict Placement', to: '/prediction', icon: FiCpu },
     { name: 'Analytics', to: '/analytics', icon: FiBarChart2 },
     { name: 'My Roadmap', to: '/roadmap', icon: FiMap },
+    { name: 'AI Career Mentor', to: '/mentor', icon: FiMessageSquare },
     { name: 'History', to: '/history', icon: FiClock },
     { name: 'Companies', to: '/companies', icon: FiBriefcase },
     { name: 'My Profile', to: '/profile', icon: FiUser },

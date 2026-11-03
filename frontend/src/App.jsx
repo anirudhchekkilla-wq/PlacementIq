@@ -21,6 +21,7 @@ import Companies from './pages/Companies';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import Admin from './pages/Admin';
+import Mentor from './pages/Mentor';
 import NotFound from './pages/NotFound';
 
 function App() {
@@ -42,6 +43,7 @@ function App() {
               <Route path="/prediction/result" element={<Result />} />
               <Route path="/analytics" element={<Analytics />} />
               <Route path="/roadmap" element={<Roadmap />} />
+              <Route path="/mentor" element={<Mentor />} />
               <Route path="/history" element={<History />} />
               <Route path="/companies" element={<Companies />} />
               <Route path="/profile" element={<Profile />} />

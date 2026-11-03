@@ -1,8 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { FiCpu, FiMap, FiCheckSquare, FiPlay, FiLoader, FiExternalLink, FiClock, FiActivity } from 'react-icons/fi';
+import {
+  FiCpu,
+  FiMap,
+  FiCheckSquare,
+  FiPlay,
+  FiLoader,
+  FiExternalLink,
+  FiClock,
+  FiActivity,
+  FiZap,
+  FiRefreshCw,
+  FiAlertCircle,
+  FiCheckCircle,
+  FiTarget,
+} from 'react-icons/fi';
 import roadmapService from '../../services/roadmapService';
 import predictionService from '../../services/predictionService';
+import aiService from '../../services/aiService';
 import Card from '../../components/common/Card';
 import Button from '../../components/common/Button';
 import { Link } from 'react-router-dom';
@@ -12,6 +27,11 @@ const Roadmap = () => {
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+
+  // AI Roadmap States
+  const [aiRoadmap, setAiRoadmap] = useState(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState('');
 
   const fetchRoadmap = async () => {
     try {
@@ -57,6 +77,117 @@ const Roadmap = () => {
     } catch (error) {
       console.error('Failed to update step status:', error);
     }
+  };
+
+  const handleGenerateAIRoadmap = async () => {
+    setAiLoading(true);
+    setAiError('');
+    try {
+      const res = await aiService.generateRoadmap();
+      if (res?.success) {
+        setAiRoadmap(res);
+      }
+    } catch (err) {
+      console.error('AI Roadmap error:', err);
+      setAiError(
+        err.response?.data?.message ||
+        err.message ||
+        'Failed to generate AI recommendations. Please ensure Ollama is running.'
+      );
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  // Helper to parse formatting in AI output
+  const renderFormattedMarkdown = (text) => {
+    if (!text) return null;
+    const lines = text.split('\n');
+
+    return (
+      <div className="space-y-2 text-sm leading-relaxed text-dark-800 dark:text-dark-200">
+        {lines.map((line, idx) => {
+          if (line.startsWith('### ')) {
+            return (
+              <h4 key={idx} className="font-bold text-base text-dark-900 dark:text-white mt-4 mb-1">
+                {line.replace('### ', '')}
+              </h4>
+            );
+          }
+          if (line.startsWith('## ')) {
+            return (
+              <h3 key={idx} className="font-bold text-lg text-primary-600 dark:text-primary-400 mt-5 mb-2 border-b border-dark-100 dark:border-dark-800 pb-1">
+                {line.replace('## ', '')}
+              </h3>
+            );
+          }
+          if (line.startsWith('# ')) {
+            return (
+              <h2 key={idx} className="font-extrabold text-xl text-dark-900 dark:text-white mt-5 mb-2">
+                {line.replace('# ', '')}
+              </h2>
+            );
+          }
+          if (line.startsWith('- ') || line.startsWith('* ')) {
+            const parsed = parseBoldAndCode(line.replace(/^[-*]\s+/, ''));
+            return (
+              <div key={idx} className="flex items-start space-x-2 pl-2">
+                <span className="text-primary-500 font-bold mt-1 text-xs">•</span>
+                <span className="flex-1">{parsed}</span>
+              </div>
+            );
+          }
+          if (/^\d+\.\s/.test(line)) {
+            const match = line.match(/^(\d+\.)\s+(.*)/);
+            return (
+              <div key={idx} className="flex items-start space-x-2 pl-2">
+                <span className="text-primary-500 font-bold text-xs mt-0.5">{match[1]}</span>
+                <span className="flex-1">{parseBoldAndCode(match[2])}</span>
+              </div>
+            );
+          }
+          if (line.trim() === '') {
+            return <div key={idx} className="h-1" />;
+          }
+          return <p key={idx}>{parseBoldAndCode(line)}</p>;
+        })}
+      </div>
+    );
+  };
+
+  const parseBoldAndCode = (text) => {
+    const parts = [];
+    const regex = /(\*\*.*?\*\*|`.*?`)/g;
+    let lastIndex = 0;
+    let match;
+
+    while ((match = regex.exec(text)) !== null) {
+      if (match.index > lastIndex) {
+        parts.push(text.substring(lastIndex, match.index));
+      }
+      const token = match[0];
+      if (token.startsWith('**') && token.endsWith('**')) {
+        parts.push(
+          <strong key={match.index} className="font-semibold text-dark-900 dark:text-white">
+            {token.slice(2, -2)}
+          </strong>
+        );
+      } else if (token.startsWith('`') && token.endsWith('`')) {
+        parts.push(
+          <code
+            key={match.index}
+            className="px-1.5 py-0.5 rounded bg-dark-100 dark:bg-dark-800 text-primary-600 dark:text-primary-400 text-xs font-mono"
+          >
+            {token.slice(1, -1)}
+          </code>
+        );
+      }
+      lastIndex = regex.lastIndex;
+    }
+    if (lastIndex < text.length) {
+      parts.push(text.substring(lastIndex));
+    }
+    return parts.length > 0 ? parts : text;
   };
 
   // Resources helper based on step category
@@ -178,10 +309,82 @@ const Roadmap = () => {
         </div>
       </Card>
 
-      {/* Steps List */}
+      {/* AI Strategist Recommendations Section (NEW Feature 2) */}
+      <Card className="border-indigo-100 dark:border-indigo-950/40 bg-gradient-to-b from-indigo-50/30 to-transparent dark:from-indigo-950/20 dark:to-transparent space-y-4">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-dark-100 dark:border-dark-800 pb-3">
+          <div>
+            <div className="flex items-center space-x-2">
+              <FiZap className="text-indigo-500" />
+              <h3 className="text-base font-bold text-dark-900 dark:text-white">
+                AI Learning Strategist Recommendations
+              </h3>
+              <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400">
+                Ollama LLM
+              </span>
+            </div>
+            <p className="text-xs text-dark-500 dark:text-dark-400 mt-0.5">
+              Generates tailored weekly milestones and study targets directly mapped to your verified profile gaps.
+            </p>
+          </div>
+
+          <Button
+            onClick={handleGenerateAIRoadmap}
+            loading={aiLoading}
+            size="sm"
+            className="shrink-0"
+          >
+            {aiRoadmap ? <FiRefreshCw className="mr-1.5" /> : <FiZap className="mr-1.5" />}
+            {aiRoadmap ? 'Regenerate AI Plan' : 'Generate AI Plan'}
+          </Button>
+        </div>
+
+        {aiError && (
+          <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/40 text-amber-800 dark:text-amber-300 text-xs flex items-center space-x-2">
+            <FiAlertCircle className="shrink-0" />
+            <span>{aiError}</span>
+          </div>
+        )}
+
+        {aiRoadmap ? (
+          <div className="space-y-4 pt-1">
+            {/* Detected Skill Gaps Tags */}
+            {aiRoadmap.studentGaps && aiRoadmap.studentGaps.length > 0 && (
+              <div className="p-3 rounded-xl bg-dark-50 dark:bg-dark-900/50 border border-dark-100 dark:border-dark-800">
+                <span className="text-[11px] font-bold text-dark-500 uppercase tracking-wider block mb-2">
+                  Target Weaknesses Analyzed:
+                </span>
+                <div className="space-y-1">
+                  {aiRoadmap.studentGaps.map((gap, i) => (
+                    <div key={i} className="text-xs text-dark-700 dark:text-dark-300 flex items-start space-x-2">
+                      <FiTarget className="text-amber-500 shrink-0 mt-0.5 text-xs" />
+                      <span>{gap.replace(/^-\s*/, '')}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* AI Generated Markdown Body */}
+            <div className="p-4 rounded-xl bg-white dark:bg-dark-900 border border-dark-100 dark:border-dark-800">
+              {renderFormattedMarkdown(aiRoadmap.recommendation)}
+            </div>
+          </div>
+        ) : !aiLoading ? (
+          <div className="text-center py-6 text-xs text-dark-400 space-y-1">
+            <p>Click "Generate AI Plan" to synthesize a personalized multi-week learning plan based on your current metrics.</p>
+          </div>
+        ) : (
+          <div className="py-8 flex flex-col items-center justify-center space-y-2 text-xs text-dark-400">
+            <FiLoader className="animate-spin text-primary-500 h-6 w-6" />
+            <span>Analyzing student metrics and formulating AI curriculum...</span>
+          </div>
+        )}
+      </Card>
+
+      {/* Steps List (Existing Rule-based steps preserved completely) */}
       <div className="space-y-4">
         <h3 className="text-sm font-bold text-dark-500 uppercase tracking-widest px-1">
-          Milestones & Action Steps
+          Standard Curriculum Milestones
         </h3>
 
         <div className="space-y-4">

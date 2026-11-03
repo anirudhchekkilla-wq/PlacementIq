@@ -11,6 +11,8 @@ import analyticsRoutes from './routes/analyticsRoutes.js';
 import roadmapRoutes from './routes/roadmapRoutes.js';
 import companyRoutes from './routes/companyRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
+import aiRoutes from './routes/aiRoutes.js';
+import explanationRoutes from './routes/explanationRoutes.js';
 
 // Load env variables
 dotenv.config();
@@ -41,6 +43,8 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/roadmap', roadmapRoutes);
 app.use('/api/companies', companyRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/ai', aiRoutes);
+app.use('/api/explanation', explanationRoutes);
 
 // Health Check Route
 app.get('/health', (req, res) => {
