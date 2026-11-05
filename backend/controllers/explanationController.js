@@ -110,7 +110,7 @@ export const getPredictionExplanation = async (req, res, next) => {
       aiExplanation = `### Summary Explanation
 - **Top Positive Factors**: ${shapResponse.placementContributions.filter(c => c.direction === 'positive').map(c => c.feature.toUpperCase()).slice(0, 3).join(', ')} helped boost placement outlook.
 - **Top Limiting Factors**: ${shapResponse.placementContributions.filter(c => c.direction === 'negative').map(c => c.feature.toUpperCase()).slice(0, 3).join(', ') || 'None significantly limiting'}.
-*(Note: Start local Ollama server with ${process.env.OLLAMA_MODEL || 'qwen3:4b'} to generate full AI natural-language analysis).*`;
+*(Note: Start local Ollama server with ${process.env.OLLAMA_MODEL || 'qwen2.5:1.5b'} to generate full AI natural-language analysis).*`;
     }
 
     res.json({

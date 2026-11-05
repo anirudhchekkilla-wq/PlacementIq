@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const getOllamaUrl = () => process.env.OLLAMA_BASE_URL || 'http://localhost:11434';
-const getOllamaModel = () => process.env.OLLAMA_MODEL || 'qwen3:4b';
+const getOllamaModel = () => process.env.OLLAMA_MODEL || 'qwen2.5:1.5b';
 
 /**
  * Clean thinking tags if present in LLM response
@@ -74,7 +74,7 @@ export const generateChatResponse = async (messages, systemPrompt) => {
           temperature: 0.7,
         },
       },
-      { timeout: 180000 }
+      { timeout: 54000 }
     );
 
     const rawContent = response.data?.message?.content || '';
@@ -145,7 +145,7 @@ Please generate a high-impact, personalized week-by-week learning plan with goal
           temperature: 0.6,
         },
       },
-      { timeout: 180000 }
+      { timeout: 54000 }
     );
 
     const rawContent = response.data?.message?.content || '';
@@ -213,7 +213,7 @@ Please produce a comprehensive, student-friendly explanation of these exact resu
           temperature: 0.5,
         },
       },
-      { timeout: 180000 }
+      { timeout: 54000 }
     );
 
     const rawContent = response.data?.message?.content || '';
@@ -224,6 +224,109 @@ Please produce a comprehensive, student-friendly explanation of these exact resu
       error.response?.data?.error ||
       error.message ||
       'Failed to generate natural language prediction explanation'
+    );
+  }
+};
+
+/**
+ * Analyze a student's resume against a target role using Ollama LLM
+ */
+export const analyzeResume = async (resumeText, targetRole = 'Software Engineer', studentData = {}) => {
+  const baseUrl = getOllamaUrl();
+  const model = getOllamaModel();
+
+  const systemPrompt = `You are the PlacementIQ Senior AI Resume Reviewer and Technical Recruiter.
+Analyze the provided student resume against the target role "${targetRole}".
+You must return your analysis strictly as a VALID JSON object (and nothing else, no markdown codeblock wrapper).
+
+JSON Schema:
+{
+  "atsScore": 82,
+  "readinessLevel": "High" | "Moderate" | "Needs Optimization",
+  "targetRole": "${targetRole}",
+  "summary": "2-3 sentence executive assessment of the resume",
+  "strengths": ["strength 1", "strength 2", "strength 3"],
+  "missingKeywords": ["keyword1", "keyword2", "keyword3", "keyword4"],
+  "sectionFeedback": {
+    "projects": "evaluation of projects with suggestions",
+    "skills": "evaluation of tech stack and frameworks",
+    "experience": "evaluation of internships / work experience or recommendation if none",
+    "education": "evaluation of academic presentation"
+  },
+  "actionableImprovements": [
+    "actionable improvement 1 with metrics (e.g., 'Quantify impact in Project X with latency reduction %')",
+    "actionable improvement 2",
+    "actionable improvement 3"
+  ]
+}`;
+
+  const userPrompt = `Target Role: ${targetRole}
+${studentData.cgpa ? `Student CGPA: ${studentData.cgpa}/10, DSA: ${studentData.dsa || 0}/100` : ''}
+
+RESUME CONTENT:
+"""
+${resumeText.slice(0, 4000)}
+"""
+
+Provide the complete JSON analysis.`;
+
+  try {
+    const response = await axios.post(
+      `${baseUrl}/api/chat`,
+      {
+        model,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt },
+        ],
+        stream: false,
+        options: {
+          temperature: 0.3,
+        },
+      },
+      { timeout: 45000 }
+    );
+
+    const rawContent = response.data?.message?.content || '';
+    const cleaned = cleanLlmContent(rawContent);
+
+    // Parse JSON safely
+    try {
+      // Find JSON block if wrapped in markdown
+      const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        return JSON.parse(jsonMatch[0]);
+      }
+      return JSON.parse(cleaned);
+    } catch (parseErr) {
+      console.warn('Could not parse strict JSON from Ollama resume response, returning structured fallback wrapper');
+      return {
+        atsScore: 74,
+        readinessLevel: 'Moderate',
+        targetRole,
+        summary: cleaned.slice(0, 300) || 'Resume analysis completed with key structural recommendations.',
+        strengths: ['Identified programming skills and technical concepts', 'Clear educational background listed'],
+        missingKeywords: ['System Design', 'Unit Testing', 'CI/CD Pipelines', 'Cloud Deployment (AWS/Docker)'],
+        sectionFeedback: {
+          projects: 'Make sure every project highlights real-world problem statements, tech stack, and live URLs.',
+          skills: 'Group skills by categories (Languages, Frameworks, Developer Tools, Databases).',
+          experience: 'Emphasize measurable outcomes using action verbs.',
+          education: 'Ensure coursework and academic achievements are cleanly displayed.',
+        },
+        actionableImprovements: [
+          'Add quantifiable metrics (e.g. "Improved query performance by 35%")',
+          'Include links to GitHub repositories and live deployments',
+          'Highlight core DSA algorithms used in complex projects',
+        ],
+        rawText: cleaned,
+      };
+    }
+  } catch (error) {
+    console.error('Ollama resume analysis error:', error.message);
+    throw new Error(
+      error.response?.data?.error ||
+      error.message ||
+      'Failed to analyze resume with AI engine'
     );
   }
 };

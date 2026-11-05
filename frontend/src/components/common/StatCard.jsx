@@ -63,7 +63,7 @@ const StatCard = ({
           )}
         </div>
         {Icon && (
-          <div className="p-3 bg-primary-50 dark:bg-primary-950/40 text-primary-600 dark:text-primary-400 rounded-lg">
+          <div className="p-3 bg-primary-50 dark:bg-[rgba(88,101,242,0.15)] text-[#5865F2] dark:text-[#00E5FF] border border-transparent dark:border-[rgba(0,229,255,0.25)] shadow-[0_0_15px_rgba(0,229,255,0.15)] rounded-xl">
             <Icon size={20} />
           </div>
         )}

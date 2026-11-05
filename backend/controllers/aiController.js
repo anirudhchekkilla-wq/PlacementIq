@@ -161,3 +161,49 @@ export const generateAIRoadmap = async (req, res, next) => {
     next(error);
   }
 };
+
+// @desc    Analyze resume with AI for ATS score, keyword gaps, and improvements
+// @route   POST /api/ai/resume
+// @access  Private
+export const analyzeResume = async (req, res, next) => {
+  const { resumeText, targetRole } = req.body;
+
+  if (!resumeText || typeof resumeText !== 'string' || resumeText.trim().length < 50) {
+    res.status(400);
+    return next(new Error('Please provide sufficient resume text (at least 50 characters) to analyze'));
+  }
+
+  try {
+    const userId = req.user._id;
+    const user = await User.findById(userId).select('-password');
+    const latestPrediction = await Prediction.findOne({ userId }).sort({ createdAt: -1 });
+
+    const studentData = {
+      name: user.name,
+      cgpa: latestPrediction?.cgpa || user.profile?.cgpa || 0,
+      dsa: latestPrediction?.dsa || user.profile?.codingSkills?.dsa || 0,
+      projects: latestPrediction?.projects || user.profile?.projects || 0,
+    };
+
+    const analysis = await ollamaService.analyzeResume(
+      resumeText,
+      targetRole || 'Software Engineer',
+      studentData
+    );
+
+    res.json({
+      success: true,
+      analysis,
+      analyzedAt: new Date().toISOString(),
+    });
+  } catch (error) {
+    if (error.message.includes('connect') || error.message.includes('ECONNREFUSED')) {
+      return res.status(503).json({
+        success: false,
+        message: 'Ollama AI engine is offline. Please ensure Ollama is running.',
+        error: error.message,
+      });
+    }
+    next(error);
+  }
+};

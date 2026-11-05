@@ -9,11 +9,15 @@
   --color-primary-300: #c084fc;
   --color-primary-400: #a78bfa;
   --color-primary-500: #8b5cf6;
-  --color-primary-600: #7c3aed;
-  --color-primary-700: #6d28d9;
-  --color-primary-800: #5b21b6;
-  --color-primary-900: #4c1d95;
-  --color-primary-950: #2e1065;
+  --color-primary-600: #5865F2; /* Electric Blue primary */
+  --color-primary-700: #4f46e5;
+  --color-primary-800: #4338ca;
+  --color-primary-900: #3730a3;
+  --color-primary-950: #1e1b4b;
+
+  --color-cyan-neon: #00E5FF;
+  --color-purple-neon: #A855F7;
+  --color-blue-neon: #5865F2;
 
   --color-dark-50: #f8fafc;
   --color-dark-100: #f1f5f9;
@@ -24,14 +28,14 @@
   --color-dark-600: #475569;
   --color-dark-700: #334155;
   --color-dark-800: #1e293b;
-  --color-dark-900: #0f172a;
-  --color-dark-950: #020617;
+  --color-dark-900: #10172A; /* Secondary Background */
+  --color-dark-950: #080B16; /* Deep Navy Background */
 
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 :root {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
   color-scheme: light dark;
 }
 
@@ -44,8 +48,8 @@ body {
 }
 
 html.dark body {
-  background-color: var(--color-dark-950);
-  color: var(--color-dark-100);
+  background-color: #080B16;
+  color: #FFFFFF;
 }
 
 /* Custom scrollbars for a premium SaaS look */
@@ -59,30 +63,68 @@ html.dark body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.3);
+  background: rgba(0, 229, 255, 0.25);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.5);
+  background: rgba(0, 229, 255, 0.5);
 }
 
 /* Smooth custom transitions */
 .transition-smooth {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Glassmorphism utility */
+/* Glassmorphism utility with subtle neon edge */
 .glass-panel {
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(16px);
   border: 1px solid rgba(226, 232, 240, 0.9);
-  box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.05), 0 8px 10px -6px rgba(99, 102, 241, 0.04);
+  box-shadow: 0 10px 25px -5px rgba(88, 101, 242, 0.05), 0 8px 10px -6px rgba(88, 101, 242, 0.04);
 }
 
 .dark .glass-panel {
-  background: rgba(15, 23, 42, 0.75);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(51, 65, 85, 0.5);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+  background: rgba(16, 23, 42, 0.75);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(88, 101, 242, 0.22);
+  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.6), 0 0 20px rgba(88, 101, 242, 0.12);
+}
+
+/* Glowing card edge effects */
+.glow-card-edge {
+  position: relative;
+  background: rgba(16, 23, 42, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(88, 101, 242, 0.25);
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.7), 0 0 25px rgba(88, 101, 242, 0.2), 0 0 15px rgba(0, 229, 255, 0.15);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glow-card-edge:hover {
+  border-color: rgba(0, 229, 255, 0.45);
+  box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.8), 0 0 35px rgba(0, 229, 255, 0.35), 0 0 20px rgba(168, 85, 247, 0.25);
+  transform: translateY(-4px);
+}
+
+/* Neon text gradient */
+.neon-text-gradient {
+  background: linear-gradient(135deg, #5865F2 0%, #A855F7 50%, #00E5FF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Neon Button Base Glow */
+.neon-btn-glow {
+  background: linear-gradient(135deg, #5865F2 0%, #7C3AED 50%, #00E5FF 100%);
+  color: #FFFFFF;
+  box-shadow: 0 0 20px rgba(88, 101, 242, 0.4), 0 0 30px rgba(0, 229, 255, 0.25);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.neon-btn-glow:hover {
+  box-shadow: 0 0 28px rgba(88, 101, 242, 0.65), 0 0 45px rgba(0, 229, 255, 0.5);
+  filter: brightness(1.1);
+  transform: translateY(-2px) scale(1.02);
 }

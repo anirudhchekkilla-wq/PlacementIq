@@ -24,27 +24,27 @@ const SparklesBackground = () => {
 
     window.addEventListener('resize', handleResize);
 
-    // Color palettes tuned for dark & light mode
+    // Neon futuristic color palette
     const darkPalette = [
-      '#a855f7', // purple-500
-      '#c084fc', // purple-400
-      '#818cf8', // indigo-400
-      '#38bdf8', // sky-400
-      '#fbbf24', // amber-400
-      '#ffffff', // bright white
+      '#00E5FF', // Cyan
+      '#5865F2', // Electric Blue
+      '#A855F7', // Neon Purple
+      '#C084FC', // Soft Purple
+      '#38BDF8', // Sky Blue
+      '#FFFFFF', // Starlight
     ];
 
     const lightPalette = [
-      '#7c3aed', // violet-600
-      '#8b5cf6', // purple-500
-      '#6366f1', // indigo-500
-      '#0ea5e9', // sky-500
-      '#f59e0b', // amber-500
-      '#ec4899', // pink-500
+      '#5865F2', // Electric Blue
+      '#7C3AED', // Violet
+      '#8B5CF6', // Purple
+      '#0284C7', // Sky
+      '#EC4899', // Pink
+      '#F59E0B', // Amber
     ];
 
     // Particle pool
-    const particleCount = 65;
+    const particleCount = 55;
     const particles = [];
 
     const createParticle = (initialY) => {
@@ -52,16 +52,14 @@ const SparklesBackground = () => {
       return {
         x: Math.random() * width,
         y: initialY !== undefined ? initialY : Math.random() * height,
-        size: Math.random() * 2.8 + 1.2,
-        baseSize: Math.random() * 2.8 + 1.2,
+        size: Math.random() * 2.5 + 1.2,
+        baseSize: Math.random() * 2.5 + 1.2,
         type: types[Math.floor(Math.random() * types.length)],
-        // Slow gentle upward and sideways drifting motion
-        vx: (Math.random() - 0.5) * 0.25,
-        vy: -(Math.random() * 0.35 + 0.15),
+        vx: (Math.random() - 0.5) * 0.2,
+        vy: -(Math.random() * 0.3 + 0.1),
         colorIndex: Math.floor(Math.random() * 6),
-        // Sparkling phase
         phase: Math.random() * Math.PI * 2,
-        twinkleSpeed: Math.random() * 0.03 + 0.015,
+        twinkleSpeed: Math.random() * 0.025 + 0.012,
         rotation: Math.random() * Math.PI,
         rotationSpeed: (Math.random() - 0.5) * 0.02,
       };
@@ -71,70 +69,43 @@ const SparklesBackground = () => {
       particles.push(createParticle());
     }
 
-    // Helper: draw a 4-point sparkling star
-    const drawStar = (cx, cy, spikes, outerRadius, innerRadius, rotation, color, alpha) => {
+    const drawParticle = (p, color, opacity) => {
       ctx.save();
-      ctx.translate(cx, cy);
-      ctx.rotate(rotation);
-      ctx.beginPath();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rotation);
+      ctx.globalAlpha = opacity;
+      ctx.fillStyle = color;
+      ctx.shadowColor = color;
+      ctx.shadowBlur = p.size * 3;
 
-      const step = Math.PI / spikes;
-      let rot = (Math.PI / 2) * 3;
-
-      ctx.moveTo(0, -outerRadius);
-      for (let i = 0; i < spikes; i++) {
-        // Curve to inner radius
-        let x = Math.cos(rot) * outerRadius;
-        let y = Math.sin(rot) * outerRadius;
-        ctx.lineTo(x, y);
-        rot += step;
-
-        x = Math.cos(rot) * innerRadius;
-        y = Math.sin(rot) * innerRadius;
-        ctx.lineTo(x, y);
-        rot += step;
+      if (p.type === 'cross-star') {
+        const s = p.size;
+        ctx.beginPath();
+        ctx.moveTo(0, -s * 2);
+        ctx.lineTo(s * 0.3, -s * 0.3);
+        ctx.lineTo(s * 2, 0);
+        ctx.lineTo(s * 0.3, s * 0.3);
+        ctx.lineTo(0, s * 2);
+        ctx.lineTo(-s * 0.3, s * 0.3);
+        ctx.lineTo(-s * 2, 0);
+        ctx.lineTo(-s * 0.3, -s * 0.3);
+        ctx.closePath();
+        ctx.fill();
+      } else if (p.type === 'diamond') {
+        const s = p.size * 1.3;
+        ctx.beginPath();
+        ctx.moveTo(0, -s);
+        ctx.lineTo(s * 0.8, 0);
+        ctx.lineTo(0, s);
+        ctx.lineTo(-s * 0.8, 0);
+        ctx.closePath();
+        ctx.fill();
+      } else {
+        ctx.beginPath();
+        ctx.arc(0, 0, p.size, 0, Math.PI * 2);
+        ctx.fill();
       }
-      ctx.lineTo(0, -outerRadius);
-      ctx.closePath();
 
-      ctx.fillStyle = color;
-      ctx.globalAlpha = alpha;
-      ctx.shadowColor = color;
-      ctx.shadowBlur = outerRadius * 2.5;
-      ctx.fill();
-      ctx.restore();
-    };
-
-    // Helper: draw diamond sparkle
-    const drawDiamond = (cx, cy, size, rotation, color, alpha) => {
-      ctx.save();
-      ctx.translate(cx, cy);
-      ctx.rotate(rotation);
-      ctx.beginPath();
-      ctx.moveTo(0, -size);
-      ctx.lineTo(size * 0.6, 0);
-      ctx.lineTo(0, size);
-      ctx.lineTo(-size * 0.6, 0);
-      ctx.closePath();
-
-      ctx.fillStyle = color;
-      ctx.globalAlpha = alpha;
-      ctx.shadowColor = color;
-      ctx.shadowBlur = size * 2;
-      ctx.fill();
-      ctx.restore();
-    };
-
-    // Helper: draw soft glowing circular dot
-    const drawGlowDot = (cx, cy, size, color, alpha) => {
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(cx, cy, size, 0, Math.PI * 2);
-      ctx.fillStyle = color;
-      ctx.globalAlpha = alpha;
-      ctx.shadowColor = color;
-      ctx.shadowBlur = size * 3;
-      ctx.fill();
       ctx.restore();
     };
 
@@ -142,47 +113,27 @@ const SparklesBackground = () => {
       ctx.clearRect(0, 0, width, height);
 
       const palette = isDark ? darkPalette : lightPalette;
-      const baseAlpha = isDark ? 0.85 : 0.65;
 
-      particles.forEach((p) => {
-        // Update sparkle motion (slow drifting)
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+
         p.x += p.vx;
         p.y += p.vy;
-        p.phase += p.twinkleSpeed;
         p.rotation += p.rotationSpeed;
+        p.phase += p.twinkleSpeed;
 
-        // Twinkle effect (sinusoidal pulse)
-        const pulse = (Math.sin(p.phase) + 1) / 2; // 0 to 1
-        const currentAlpha = (pulse * 0.65 + 0.25) * baseAlpha;
-        const currentSize = p.baseSize * (pulse * 0.5 + 0.75);
+        const twinkle = Math.sin(p.phase);
+        const opacity = Math.max(0.15, Math.min(0.85, (twinkle + 1) / 2));
+        p.size = p.baseSize * (0.8 + 0.3 * twinkle);
 
-        // Boundary wrap-around
-        if (p.y < -30) {
-          p.y = height + 20;
-          p.x = Math.random() * width;
+        if (p.y < -20) {
+          particles[i] = createParticle(height + 10);
         }
-        if (p.x < -30) p.x = width + 20;
-        if (p.x > width + 30) p.x = -20;
+        if (p.x < -20) p.x = width + 20;
+        if (p.x > width + 20) p.x = -20;
 
-        const color = palette[p.colorIndex % palette.length];
-
-        if (p.type === 'cross-star') {
-          drawStar(
-            p.x,
-            p.y,
-            4,
-            currentSize * 2.2,
-            currentSize * 0.5,
-            p.rotation,
-            color,
-            currentAlpha
-          );
-        } else if (p.type === 'diamond') {
-          drawDiamond(p.x, p.y, currentSize * 1.8, p.rotation, color, currentAlpha);
-        } else {
-          drawGlowDot(p.x, p.y, currentSize, color, currentAlpha);
-        }
-      });
+        drawParticle(p, palette[p.colorIndex], opacity);
+      }
 
       animationFrameId = requestAnimationFrame(render);
     };
@@ -196,11 +147,86 @@ const SparklesBackground = () => {
   }, [isDark]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-[1] transition-opacity duration-700"
+    <div
+      className="fixed inset-0 pointer-events-none z-[-1] overflow-hidden transition-colors duration-500"
+      style={{
+        backgroundColor: isDark ? '#080B16' : '#F8FAFC',
+      }}
       aria-hidden="true"
-    />
+    >
+      {/* Animated Drifting Gradient Orbs */}
+      <div
+        className="absolute rounded-full filter blur-[120px] will-change-transform pointer-events-none opacity-40 dark:opacity-50"
+        style={{
+          width: '550px',
+          height: '550px',
+          background: 'radial-gradient(circle, rgba(88, 101, 242, 0.45) 0%, rgba(168, 85, 247, 0.25) 60%, transparent 100%)',
+          top: '-150px',
+          left: '-100px',
+          animation: 'driftOrb1 20s ease-in-out infinite alternate',
+        }}
+      />
+
+      <div
+        className="absolute rounded-full filter blur-[130px] will-change-transform pointer-events-none opacity-35 dark:opacity-45"
+        style={{
+          width: '600px',
+          height: '600px',
+          background: 'radial-gradient(circle, rgba(0, 229, 255, 0.4) 0%, rgba(88, 101, 242, 0.25) 65%, transparent 100%)',
+          bottom: '5%',
+          right: '-150px',
+          animation: 'driftOrb2 24s ease-in-out infinite alternate',
+        }}
+      />
+
+      <div
+        className="absolute rounded-full filter blur-[110px] will-change-transform pointer-events-none opacity-30 dark:opacity-40"
+        style={{
+          width: '450px',
+          height: '450px',
+          background: 'radial-gradient(circle, rgba(168, 85, 247, 0.35) 0%, rgba(0, 229, 255, 0.15) 70%, transparent 100%)',
+          top: '35%',
+          left: '30%',
+          animation: 'driftOrb3 28s ease-in-out infinite alternate',
+        }}
+      />
+
+      {/* Futuristic Cyber Grid */}
+      <div
+        className="absolute inset-0 pointer-events-none opacity-60 dark:opacity-80"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, rgba(88, 101, 242, 0.05) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(88, 101, 242, 0.05) 1px, transparent 1px)
+          `,
+          backgroundSize: '48px 48px',
+          maskImage: 'radial-gradient(ellipse at center, rgba(0, 0, 0, 0.85) 0%, transparent 80%)',
+          WebkitMaskImage: 'radial-gradient(ellipse at center, rgba(0, 0, 0, 0.85) 0%, transparent 80%)',
+        }}
+      />
+
+      {/* Particle Canvas */}
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
+
+      {/* CSS Keyframe Injections for Orbs */}
+      <style>{`
+        @keyframes driftOrb1 {
+          0% { transform: translate(0, 0) scale(1); }
+          50% { transform: translate(100px, 80px) scale(1.12); }
+          100% { transform: translate(50px, 130px) scale(0.95); }
+        }
+        @keyframes driftOrb2 {
+          0% { transform: translate(0, 0) scale(1); }
+          50% { transform: translate(-90px, -70px) scale(1.15); }
+          100% { transform: translate(-30px, -110px) scale(0.92); }
+        }
+        @keyframes driftOrb3 {
+          0% { transform: translate(0, 0) scale(0.95); }
+          50% { transform: translate(-70px, 80px) scale(1.1); }
+          100% { transform: translate(60px, -40px) scale(1.02); }
+        }
+      `}</style>
+    </div>
   );
 };
 

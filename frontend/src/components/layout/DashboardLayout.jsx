@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Outlet, Navigate, useLocation, Link } from 'react-router-dom';
+import { Outlet, Navigate, useLocation, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import Sidebar from '../common/Sidebar';
@@ -9,6 +9,7 @@ import api from '../../services/api';
 const DashboardLayout = () => {
   const { isAuthenticated, loading, user, logout } = useAuth();
   const { isDark, toggleTheme } = useTheme();
+  const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -31,7 +32,7 @@ const DashboardLayout = () => {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" replace />;
   }
 
   // Fetch notifications
@@ -66,6 +67,8 @@ const DashboardLayout = () => {
     if (path.startsWith('/prediction')) return 'Placement Prediction';
     if (path.startsWith('/analytics')) return 'Analytics Insights';
     if (path.startsWith('/roadmap')) return 'Career Roadmap';
+    if (path.startsWith('/mentor')) return 'AI Career Mentor';
+    if (path.startsWith('/resume-analyser')) return 'AI Resume Analyser';
     if (path.startsWith('/history')) return 'Prediction History';
     if (path.startsWith('/companies')) return 'Partner Companies';
     if (path.startsWith('/profile')) return 'Student Profile';
@@ -77,14 +80,14 @@ const DashboardLayout = () => {
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   return (
-    <div className="min-h-screen bg-dark-50 dark:bg-dark-950 text-dark-800 dark:text-dark-200">
+    <div className="min-h-screen bg-transparent text-dark-800 dark:text-dark-200">
       {/* Sidebar */}
       <Sidebar isOpen={sidebarOpen} toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
 
       {/* Main Content Area */}
       <div className="md:pl-64 flex flex-col flex-1 min-h-screen">
         {/* Header */}
-        <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-dark-200 dark:border-dark-800 bg-white/70 dark:bg-dark-950/70 backdrop-blur-md px-6">
+        <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-dark-200 dark:border-[rgba(88,101,242,0.2)] bg-white/75 dark:bg-[#080B16]/75 backdrop-blur-xl px-6">
           <div className="flex items-center space-x-4">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -201,6 +204,7 @@ const DashboardLayout = () => {
                     onClick={() => {
                       setUserDropdownOpen(false);
                       logout();
+                      navigate('/');
                     }}
                     className="flex w-full items-center space-x-2 px-4 py-2 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 text-left cursor-pointer"
                   >

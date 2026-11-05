@@ -24,6 +24,12 @@ const aiService = {
     const response = await api.post('/explanation', { predictionId, predictionData });
     return response.data;
   },
+
+  // Analyze Resume with AI
+  analyzeResume: async (resumeText, targetRole) => {
+    const response = await api.post('/ai/resume', { resumeText, targetRole });
+    return response.data;
+  },
 };
 
 export default aiService;

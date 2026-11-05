@@ -1,8 +1,20 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FiCpu, FiTrendingUp, FiMap, FiBriefcase, FiArrowRight, FiSun, FiMoon } from 'react-icons/fi';
+import {
+  FiCpu,
+  FiTrendingUp,
+  FiMap,
+  FiBriefcase,
+  FiArrowRight,
+  FiSun,
+  FiMoon,
+  FiShield,
+  FiZap,
+} from 'react-icons/fi';
 import Button from '../../components/common/Button';
+import SplineRobot from '../../components/common/SplineRobot';
+import PlacementIQLogo from '../../components/common/PlacementIQLogo';
 import { useTheme } from '../../context/ThemeContext';
 
 const Landing = () => {
@@ -12,28 +24,22 @@ const Landing = () => {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.15 }
-    }
+      transition: { staggerChildren: 0.15 },
+    },
   };
 
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },
-    visible: { y: 0, opacity: 1, transition: { duration: 0.5 } }
+    visible: { y: 0, opacity: 1, transition: { duration: 0.5 } },
   };
 
   return (
-    <div className="min-h-screen bg-dark-50 dark:bg-dark-950 text-dark-900 dark:text-white overflow-hidden relative transition-colors duration-300">
-      {/* Background Orbs */}
-      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-primary-400/15 dark:bg-primary-900/20 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-indigo-400/15 dark:bg-indigo-900/20 blur-[120px] pointer-events-none" />
-
+    <div className="min-h-screen text-dark-900 dark:text-white overflow-hidden relative transition-colors duration-300">
       {/* Header */}
-      <header className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between border-b border-dark-200/60 dark:border-white/5 relative z-10">
+      <header className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between border-b border-dark-200/60 dark:border-[rgba(88,101,242,0.2)] relative z-20 backdrop-blur-md">
         <div className="flex items-center space-x-2.5">
-          <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-primary-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md shadow-primary-500/20 text-lg">
-            P
-          </div>
-          <span className="text-lg font-bold bg-gradient-to-r from-dark-900 to-primary-600 dark:from-white dark:to-dark-300 bg-clip-text text-transparent tracking-tight">
+          <PlacementIQLogo size={40} />
+          <span className="text-xl font-black bg-gradient-to-r from-dark-900 via-[#5865F2] to-[#00E5FF] dark:from-white dark:via-[#00E5FF] dark:to-[#A855F7] bg-clip-text text-transparent tracking-tight">
             PlacementIQ
           </span>
         </div>
@@ -42,14 +48,17 @@ const Landing = () => {
           <button
             type="button"
             onClick={toggleTheme}
-            className="p-2 rounded-xl border border-dark-200 dark:border-white/10 text-dark-600 dark:text-dark-300 hover:text-dark-900 dark:hover:text-white hover:bg-dark-100 dark:hover:bg-white/5 transition-all cursor-pointer"
+            className="p-2.5 rounded-xl border border-dark-200 dark:border-[rgba(88,101,242,0.3)] bg-white/80 dark:bg-[#10172A]/80 backdrop-blur-md text-dark-600 dark:text-[#00E5FF] hover:text-dark-900 dark:hover:text-white hover:bg-dark-100 dark:hover:bg-[#17223B] shadow-sm hover:shadow-[0_0_15px_rgba(0,229,255,0.3)] transition-all cursor-pointer"
             title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             aria-label="Toggle theme"
           >
-            {isDark ? <FiSun className="h-4.5 w-4.5 text-amber-400" /> : <FiMoon className="h-4.5 w-4.5 text-primary-600" />}
+            {isDark ? <FiSun className="h-4.5 w-4.5 text-[#00E5FF]" /> : <FiMoon className="h-4.5 w-4.5 text-[#5865F2]" />}
           </button>
 
-          <Link to="/login" className="text-sm font-semibold text-dark-600 dark:text-dark-300 hover:text-dark-900 dark:hover:text-white transition-smooth">
+          <Link
+            to="/login"
+            className="text-sm font-semibold text-dark-600 dark:text-dark-300 hover:text-dark-900 dark:hover:text-[#00E5FF] transition-all"
+          >
             Sign In
           </Link>
           <Link to="/register">
@@ -58,94 +67,133 @@ const Landing = () => {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <main className="max-w-7xl mx-auto px-6 py-20 md:py-32 relative z-10 flex flex-col items-center text-center">
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="max-w-3xl space-y-6"
-        >
+      {/* Main Hero Section with Spline 3D Robot */}
+      <main className="max-w-7xl mx-auto px-6 py-12 md:py-20 relative z-10">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-8">
+          {/* Left Column: Heading and Description */}
           <motion.div
-            variants={itemVariants}
-            className="inline-flex items-center space-x-2 px-3 py-1 rounded-full border border-primary-500/30 bg-primary-100/60 dark:bg-primary-950/40 text-primary-700 dark:text-primary-300 text-xs font-semibold uppercase tracking-wider"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="w-full lg:w-1/2 text-center lg:text-left space-y-6"
           >
-            <FiCpu className="animate-pulse" />
-            <span>AI-Powered Career Intelligence</span>
+            <motion.div
+              variants={itemVariants}
+              className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full border border-[rgba(0,229,255,0.4)] bg-[rgba(88,101,242,0.12)] text-[#00E5FF] text-xs font-bold uppercase tracking-wider shadow-[0_0_15px_rgba(0,229,255,0.25)]"
+            >
+              <FiZap className="animate-pulse" />
+              <span>AI-Powered Career Intelligence</span>
+            </motion.div>
+
+            <motion.h1
+              variants={itemVariants}
+              className="text-4xl sm:text-6xl font-black tracking-tight leading-[1.1] text-dark-900 dark:text-white"
+            >
+              Predict Your Placement.{' '}
+              <span className="block mt-1 bg-gradient-to-r from-[#5865F2] via-[#A855F7] to-[#00E5FF] bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(0,229,255,0.35)]">
+                Elevate Your Career.
+              </span>
+            </motion.h1>
+
+            <motion.p
+              variants={itemVariants}
+              className="text-base sm:text-lg text-dark-600 dark:text-[#94A3B8] max-w-xl mx-auto lg:mx-0 leading-relaxed font-normal"
+            >
+              Analyze your profile against thousands of verified university placement datasets. Get instant ML placement probability, expected CTC packages, Explainable AI insights, and an AI learning roadmap.
+            </motion.p>
+
+            <motion.div
+              variants={itemVariants}
+              className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4"
+            >
+              <Link to="/register" className="w-full sm:w-auto">
+                <Button size="lg" className="w-full sm:w-auto">
+                  Predict Now <FiArrowRight className="ml-2" />
+                </Button>
+              </Link>
+              <Link to="/login" className="w-full sm:w-auto">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="w-full sm:w-auto"
+                >
+                  View Demo Dashboard
+                </Button>
+              </Link>
+            </motion.div>
+
+            {/* Quick Stats Pill Badges */}
+            <motion.div
+              variants={itemVariants}
+              className="pt-6 flex flex-wrap items-center justify-center lg:justify-start gap-4 text-xs font-semibold text-dark-500 dark:text-[#94A3B8]"
+            >
+              <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-white/70 dark:bg-[#10172A]/70 border border-dark-200 dark:border-[rgba(88,101,242,0.25)]">
+                <span className="h-2 w-2 rounded-full bg-[#00E5FF] animate-ping" />
+                <span>Dual Random Forest ML</span>
+              </div>
+              <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-white/70 dark:bg-[#10172A]/70 border border-dark-200 dark:border-[rgba(88,101,242,0.25)]">
+                <FiCpu className="text-[#A855F7]" />
+                <span>Explainable AI (SHAP)</span>
+              </div>
+              <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-white/70 dark:bg-[#10172A]/70 border border-dark-200 dark:border-[rgba(88,101,242,0.25)]">
+                <FiShield className="text-[#5865F2]" />
+                <span>Ollama Career Mentor</span>
+              </div>
+            </motion.div>
           </motion.div>
 
-          <motion.h2
-            variants={itemVariants}
-            className="text-4xl sm:text-6xl font-extrabold tracking-tight bg-gradient-to-b from-dark-950 via-dark-800 to-dark-600 dark:from-white dark:to-dark-400 bg-clip-text text-transparent leading-none"
-          >
-            Predict Your Placement.<br />
-            <span className="bg-gradient-to-r from-primary-500 to-indigo-500 dark:from-primary-400 dark:to-indigo-400 bg-clip-text text-transparent">
-              Elevate Your Career.
-            </span>
-          </motion.h2>
-
-          <motion.p
-            variants={itemVariants}
-            className="text-lg text-dark-600 dark:text-dark-400 max-w-2xl mx-auto leading-relaxed"
-          >
-            Analyze your profile against thousands of student datasets. Get placement probability, expected salary ranges, skill gap analysis, and a personalized roadmap instantly.
-          </motion.p>
-
+          {/* Right Column: Spline 3D Animated Robot Floating Interactively */}
           <motion.div
-            variants={itemVariants}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="w-full lg:w-1/2 flex items-center justify-center relative min-h-[500px] lg:min-h-[620px]"
           >
-            <Link to="/register">
-              <Button size="lg" className="w-full sm:w-auto">
-                Predict Now <FiArrowRight className="ml-2" />
-              </Button>
-            </Link>
-            <Link to="/login">
-              <Button variant="outline" size="lg" className="w-full sm:w-auto border-dark-300 dark:border-white/10 hover:bg-dark-100 dark:hover:bg-white/5 text-dark-800 dark:text-white">
-                View Demo Dashboard
-              </Button>
-            </Link>
+            <SplineRobot
+              height="600px"
+              className="w-full"
+            />
           </motion.div>
-        </motion.div>
+        </div>
 
-        {/* Feature Grid */}
-        <section className="mt-32 w-full grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="p-6 rounded-2xl border border-dark-200/80 dark:border-white/5 bg-white/80 dark:bg-white/[0.02] shadow-sm dark:shadow-none backdrop-blur-md text-left space-y-4 hover:border-primary-500/30 hover:shadow-md transition-all">
-            <div className="p-3 bg-primary-50 dark:bg-primary-950/40 border border-primary-200 dark:border-primary-500/20 text-primary-600 dark:text-primary-400 rounded-xl w-fit">
+        {/* Feature Grid with Futuristic Glow Cards */}
+        <section className="mt-24 sm:mt-32 w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="p-6 rounded-2xl border border-dark-200/80 dark:border-[rgba(88,101,242,0.25)] bg-white/80 dark:bg-[#10172A]/75 backdrop-blur-xl shadow-sm dark:shadow-[0_10px_30px_rgba(0,0,0,0.5)] text-left space-y-4 hover:border-[#00E5FF] hover:shadow-[0_0_25px_rgba(0,229,255,0.25)] transition-all group">
+            <div className="p-3 bg-primary-50 dark:bg-[rgba(88,101,242,0.15)] border border-primary-200 dark:border-[rgba(88,101,242,0.3)] text-[#5865F2] dark:text-[#00E5FF] rounded-xl w-fit group-hover:scale-110 transition-transform">
               <FiCpu size={22} />
             </div>
             <h3 className="text-lg font-bold text-dark-900 dark:text-white">Placement Probability</h3>
-            <p className="text-sm text-dark-600 dark:text-dark-400">
+            <p className="text-sm text-dark-600 dark:text-[#94A3B8]">
               Run your academic records, projects, and skills through our ML model to check your hiring probability.
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl border border-dark-200/80 dark:border-white/5 bg-white/80 dark:bg-white/[0.02] shadow-sm dark:shadow-none backdrop-blur-md text-left space-y-4 hover:border-indigo-500/30 hover:shadow-md transition-all">
-            <div className="p-3 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-500/20 text-indigo-600 dark:text-indigo-400 rounded-xl w-fit">
+          <div className="p-6 rounded-2xl border border-dark-200/80 dark:border-[rgba(88,101,242,0.25)] bg-white/80 dark:bg-[#10172A]/75 backdrop-blur-xl shadow-sm dark:shadow-[0_10px_30px_rgba(0,0,0,0.5)] text-left space-y-4 hover:border-[#A855F7] hover:shadow-[0_0_25px_rgba(168,85,247,0.25)] transition-all group">
+            <div className="p-3 bg-purple-50 dark:bg-[rgba(168,85,247,0.15)] border border-purple-200 dark:border-[rgba(168,85,247,0.3)] text-[#A855F7] rounded-xl w-fit group-hover:scale-110 transition-transform">
               <FiTrendingUp size={22} />
             </div>
             <h3 className="text-lg font-bold text-dark-900 dark:text-white">Salary Estimation</h3>
-            <p className="text-sm text-dark-600 dark:text-dark-400">
+            <p className="text-sm text-dark-600 dark:text-[#94A3B8]">
               Estimate your expected package based on historical placement distributions and skill alignments.
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl border border-dark-200/80 dark:border-white/5 bg-white/80 dark:bg-white/[0.02] shadow-sm dark:shadow-none backdrop-blur-md text-left space-y-4 hover:border-emerald-500/30 hover:shadow-md transition-all">
-            <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-xl w-fit">
+          <div className="p-6 rounded-2xl border border-dark-200/80 dark:border-[rgba(88,101,242,0.25)] bg-white/80 dark:bg-[#10172A]/75 backdrop-blur-xl shadow-sm dark:shadow-[0_10px_30px_rgba(0,0,0,0.5)] text-left space-y-4 hover:border-[#00E5FF] hover:shadow-[0_0_25px_rgba(0,229,255,0.25)] transition-all group">
+            <div className="p-3 bg-emerald-50 dark:bg-[rgba(0,229,255,0.15)] border border-emerald-200 dark:border-[rgba(0,229,255,0.3)] text-[#00E5FF] rounded-xl w-fit group-hover:scale-110 transition-transform">
               <FiMap size={22} />
             </div>
             <h3 className="text-lg font-bold text-dark-900 dark:text-white">Roadmap Generator</h3>
-            <p className="text-sm text-dark-600 dark:text-dark-400">
+            <p className="text-sm text-dark-600 dark:text-[#94A3B8]">
               Receive a step-by-step personalized learning roadmap mapping directly to your profile weaknesses.
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl border border-dark-200/80 dark:border-white/5 bg-white/80 dark:bg-white/[0.02] shadow-sm dark:shadow-none backdrop-blur-md text-left space-y-4 hover:border-rose-500/30 hover:shadow-md transition-all">
-            <div className="p-3 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-500/20 text-rose-600 dark:text-rose-400 rounded-xl w-fit">
+          <div className="p-6 rounded-2xl border border-dark-200/80 dark:border-[rgba(88,101,242,0.25)] bg-white/80 dark:bg-[#10172A]/75 backdrop-blur-xl shadow-sm dark:shadow-[0_10px_30px_rgba(0,0,0,0.5)] text-left space-y-4 hover:border-[#5865F2] hover:shadow-[0_0_25px_rgba(88,101,242,0.25)] transition-all group">
+            <div className="p-3 bg-rose-50 dark:bg-[rgba(88,101,242,0.15)] border border-rose-200 dark:border-[rgba(88,101,242,0.3)] text-[#5865F2] rounded-xl w-fit group-hover:scale-110 transition-transform">
               <FiBriefcase size={22} />
             </div>
             <h3 className="text-lg font-bold text-dark-900 dark:text-white">Company Eligibility</h3>
-            <p className="text-sm text-dark-600 dark:text-dark-400">
+            <p className="text-sm text-dark-600 dark:text-[#94A3B8]">
               Check your eligibility status and criteria breakdown for top-tier hiring companies.
             </p>
           </div>
